@@ -1,40 +1,43 @@
 import Player from '@vimeo/player';
 import throttle from 'lodash.throttle';
 
-const player = new Player('vimeo-player', {
-  id: 19231868,
-  width: 640,
-});
+const player = new Player('vimeo-player');
+
+const setStorageData = (key, value) => {
+  try {
+    const timeValue = JSON.stringify(value);
+    localStorage.setItem(key, timeValue);
+  } catch (error) {
+    console.error('Set state error: ', error.message);
+  }
+};
+
+const getStorageData = key => {
+  try {
+    const timeValue = localStorage.getItem(key);
+    return timeValue === null ? undefined : JSON.parse(timeValue);
+  } catch (error) {
+    console.error('Get state error: ', error.message);
+  }
+};
+
+let currentTime = getStorageData('videoplayer-current-time') || [];
 
 player.on('timeupdate', throttle(onPlay, 1000));
 
-let theme = '';
-
 function onPlay(data) {
-  localStorage.setItem('videoplayer-current-time', data.seconds);
-
-  theme = localStorage.getItem('videoplayer-current-time');
-  console.log(theme);
-  player.setCurrentTime(theme);
+  setStorageData('videoplayer-current-time', data.seconds);
 }
 
-// if (theme) {
-//   console.log(theme);
-// }
-
 player
-  .setCurrentTime(theme)
-  .then(function (seconds) {
-    console.log('test');
-  })
+  .setCurrentTime(currentTime)
+  .then(function () {})
   .catch(function (error) {
     switch (error.name) {
       case 'RangeError':
-        // the time was less than 0 or greater than the video`s duration
         break;
 
       default:
-        // some other error occurred
         break;
     }
   });
