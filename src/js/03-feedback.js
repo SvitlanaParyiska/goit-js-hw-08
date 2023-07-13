@@ -5,7 +5,7 @@ const formElement = document.querySelector('.feedback-form');
 formElement.addEventListener('input', throttle(onFormInput, 500));
 formElement.addEventListener('submit', onFormSubmit);
 
-const dataObj = {};
+const dataObj = JSON.parse(localStorage.getItem('feedback-form-state')) || {};
 
 populateForm();
 
@@ -19,14 +19,7 @@ const setStorageData = (key, value) => {
 };
 
 function onFormInput(evt) {
-  if (evt.target.nodeName === 'INPUT') {
-    setStorageData(evt.target.name, evt.target.value);
-    console.log(evt.target.value);
-  }
-  if (evt.target.nodeName === 'TEXTAREA') {
-    setStorageData(evt.target.name, evt.target.value);
-    console.log(evt.target.value);
-  }
+  setStorageData(evt.target.name, evt.target.value);
 }
 
 function onFormSubmit(evt) {
@@ -39,7 +32,7 @@ function onFormSubmit(evt) {
 function populateForm() {
   let formData = JSON.parse(localStorage.getItem('feedback-form-state'));
   if (formData) {
-    formElement.email.value = formData.email;
-    formElement.message.value = formData.message;
+    formElement.email.value = formData.email || [];
+    formElement.message.value = formData.message || [];
   }
 }
